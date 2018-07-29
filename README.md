@@ -1,5 +1,5 @@
 # youdaonote-github
-####有道云笔记自动上传笔记到github
+#### 有道云笔记自动上传笔记到github
 
 > 实现功能：有道云笔记啊分享的笔记自动上传到github
 
@@ -9,10 +9,7 @@
 - 1. 分享你的笔记文件夹
 - 2. F12打开调试-网络 找到如图的连接，填写在com.junzixiehui.util.YoudaoNote2github
 
-
-
-
-
+![image](https://raw.githubusercontent.com/junzixiehui/youdaonote-github/master/doc/method.png)
 
 
 
