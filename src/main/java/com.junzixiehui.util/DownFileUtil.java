@@ -17,6 +17,66 @@ import java.util.Map;
 public class DownFileUtil {
 
 
+	public static void  downFileFromYoudaoNote(String mainId,String subdirId,String filePath){
+		String bathPath =
+				"https://note.youdao.com/yws/public/notebook/" + mainId + "/" + "subdir/" + subdirId + "?cstk=PCeekVDC";
+
+		List<Object> resultList = getFirstItem(bathPath);
+
+		for (Object obj : resultList) {
+			if (obj instanceof List) {
+				List<Map<String, Object>> mapList = (List<Map<String, Object>>) obj;
+
+				for (Map<String, Object> map : mapList) {
+					String p = String.valueOf(map.get("p"));
+					String secondPath = String.valueOf(map.get("tl"));
+					String secondUrl =
+							"https://note.youdao.com/yws/public/notebook/" + mainId + "/subdir" + p + "?cstk=PCeekVDC";
+					List<Object> secondResultList = getFirstItem(secondUrl);
+
+					for (Object object : secondResultList) {
+						if (object instanceof List) {
+							List<Map<String, Object>> secondMapList = (List<Map<String, Object>>) object;
+
+							for (Map<String, Object> map1 : secondMapList) {
+
+								String p1 = String.valueOf(map1.get("p"));
+								String fileName = String.valueOf(map1.get("tl"));
+								if (fileName.endsWith("note")) {
+									continue;
+								}
+								String path = p1.substring(p1.lastIndexOf("/") + 1);
+
+								String downUrl = "https://note.youdao.com/yws/api/personal/file/" + path
+										+ "?method=download&read=true&shareKey=" + mainId + "&cstk=PCeekVDC";
+
+								File file = saveUrlAs(downUrl, filePath, secondPath, fileName, "GET");
+								System.out.println("save over..." + file.getName() + ":" + fileName);
+
+							}
+						}
+					}
+					try {
+						Thread.sleep(1000);
+					} catch (Exception e) {
+
+					}
+				}
+			}
+		}
+	}
+
+
+	public static List<Object> getFirstItem(String basePath) {
+
+		HttpClientUtils httpClientUtils = new HttpClientUtils();
+		String result = httpClientUtils.httpGet(basePath);
+
+		List<Object> resultList = FastJson.jsonStr2Object(result, List.class);
+		return resultList;
+	}
+
+
 	public static File saveUrlAs(String url, String firstPath, String secondPath, String fileName, String method) {
 		//创建不同的文件夹目录
 		String filePath = firstPath + "/" + secondPath;
@@ -65,88 +125,11 @@ public class DownFileUtil {
 			bos.close();
 			bis.close();
 		} catch (Exception e) {
-			System.out.println("exception:" + filePath + "/" +fileName + "|" +  e.getMessage());
+			System.out.println("exception:" + filePath + "/" + fileName + "|" + e.getMessage());
 		} finally {
 			conn.disconnect();
 		}
 		return file;
-	}
-
-
-	public static void main(String[] args) {
-		/*String photoUrl = "https://note.youdao.com/yws/api/personal/file/B4E92DB12C4B4DDD8C97FF125BFF3BF1?"
-				+ "method=download&read=true&shareKey=0d64bf41cd4d1fb75198c0d0d4414c9c&cstk=PCeekVDC";
-		String filePath = "/Users/qulibin/IdeaProjects/java-eye/youdaoNote";
-
-		String secondPath = "笔记37-高可用";
-
-		String fileName = "高可用高并发.md";
-		File file = saveUrlAs(photoUrl, filePath, secondPath, fileName,"GET");
-		System.out.println("save over " + file.getName());*/
-
-		String mainId = "0d64bf41cd4d1fb75198c0d0d4414c9c";
-		String filePath = "/Users/qulibin/IdeaProjects/java-eye/youdaoNote";
-
-
-		String bathPath = "https://note.youdao.com/yws/public/notebook/" + mainId + "/"
-				+ "subdir/D2CB4578F1B740A7A8CA17887C85FBDB?cstk=PCeekVDC";
-
-		List<Object> resultList = getFirstItem(bathPath);
-
-		for (Object obj : resultList) {
-			if (obj instanceof List) {
-				List<Map<String, Object>> mapList = (List<Map<String, Object>>) obj;
-
-				for (Map<String, Object> map : mapList) {
-					String p = String.valueOf(map.get("p"));
-					String secondPath = String.valueOf(map.get("tl"));
-
-
-					String secondUrl =
-							"https://note.youdao.com/yws/public/notebook/" + mainId + "/subdir" + p + "?cstk=PCeekVDC";
-					List<Object> secondResultList = getFirstItem(secondUrl);
-
-					for (Object object : secondResultList) {
-						if (object instanceof List) {
-							List<Map<String, Object>> secondMapList = (List<Map<String, Object>>) object;
-
-							for (Map<String, Object> map1 : secondMapList) {
-
-								String p1 = String.valueOf(map1.get("p"));
-								String fileName = String.valueOf(map1.get("tl"));
-								if (fileName.endsWith("note")){
-									continue;
-								}
-								String path = p1.substring(p1.lastIndexOf("/") + 1);
-
-								String downUrl = "https://note.youdao.com/yws/api/personal/file/" + path
-										+ "?method=download&read=true&shareKey=" + mainId + "&cstk=PCeekVDC";
-
-								File file = saveUrlAs(downUrl, filePath, secondPath, fileName, "GET");
-								System.out.println("save over..." + file.getName() + ":" +fileName);
-
-							}
-						}
-					}
-					try {
-						Thread.sleep(1000);
-					} catch (Exception e){
-
-					}
-
-				}
-			}
-		}
-	}
-
-
-	public static List<Object> getFirstItem(String basePath) {
-
-		HttpClientUtils httpClientUtils = new HttpClientUtils();
-		String result = httpClientUtils.httpGet(basePath);
-
-		List<Object> resultList = FastJson.jsonStr2Object(result, List.class);
-		return resultList;
 	}
 
 }
