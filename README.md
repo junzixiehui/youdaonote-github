@@ -7,7 +7,7 @@
 
 #### 步骤
 - 1. 分享你的笔记文件夹
-- 2. F12打开调试-网络 找到如图的连接，填写在
+- 2. F12打开调试-网络 找到如图的连接，填写在com.junzixiehui.util.YoudaoNote2github
 
 
 
